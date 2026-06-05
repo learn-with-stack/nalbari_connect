@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Environment files can contain secrets. Keep only .env.example in git.
+.env
+.env.*
+!.env.example

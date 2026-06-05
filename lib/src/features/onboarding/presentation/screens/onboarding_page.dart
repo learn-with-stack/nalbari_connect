@@ -1,190 +1,112 @@
 import 'package:nalbari_connect/src/imports/imports.dart';
 
-class OnboardingPage extends StatefulWidget {
+class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});
 
   @override
-  State<OnboardingPage> createState() => _OnboardingPageState();
-}
-
-class _OnboardingPageState extends State<OnboardingPage> {
-  late final PageController _pageController;
-  int _currentIndex = 0;
-
-  late final List<Map<String, dynamic>> _onboardingData;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-    _onboardingData = [
-      {
-        'title': 'onboarding.onboarding_title_1'.tr(),
-        'subtitle':
-            'onboarding.onboarding_subtitle_1'.tr(),
-        'pageWidget': const FlutterLogo(size: 200),
-      },
-      {
-        'title': 'onboarding.onboarding_title_2'.tr(),
-        'subtitle':
-            'onboarding.onboarding_subtitle_2'.tr(),
-        'pageWidget': const FlutterLogo(size: 200),
-      },
-      {
-        'title': 'onboarding.onboarding_title_3'.tr(),
-        'subtitle':
-            'onboarding.onboarding_subtitle_3'.tr(),
-        'pageWidget': const FlutterLogo(size: 200),
-      },
-    ];
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  void _onGetStarted() {
-    // Navigate back or to home. For template purpose:
-    context.go(AppRoutes.login);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    return _OnboardingView(
-      theme: theme,
-      colorScheme: colorScheme,
-      textTheme: textTheme,
-      pageController: _pageController,
-      currentIndex: _currentIndex,
-      onboardingData: _onboardingData,
-      onPageChanged: (index) => setState(() => _currentIndex = index),
-      onGetStarted: _onGetStarted,
+    final cs = context.theme.colorScheme;
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(24.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Spacer(),
+              Center(child: SvgPicture.asset(AppAssets.logo, width: 92.w, height: 92.w)),
+              SizedBox(height: 28.h),
+              Text(
+                'onboarding.title'.tr(),
+                textAlign: TextAlign.center,
+                style: context.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
+              ),
+              SizedBox(height: 12.h),
+              Text(
+                'onboarding.subtitle'.tr(),
+                textAlign: TextAlign.center,
+                style: context.textTheme.bodyLarge?.copyWith(color: cs.onSurfaceVariant, height: 1.45),
+              ),
+              SizedBox(height: 28.h),
+              _LanguageSelector(),
+              SizedBox(height: 16.h),
+              _PermissionNote(),
+              const Spacer(),
+              FilledButton(
+                onPressed: () => context.go(AppRoutes.login),
+                child: Text('onboarding.start'.tr()),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-class _OnboardingView extends StatelessWidget {
-  const _OnboardingView({
-    required this.theme,
-    required this.colorScheme,
-    required this.textTheme,
-    required this.pageController,
-    required this.currentIndex,
-    required this.onboardingData,
-    required this.onPageChanged,
-    required this.onGetStarted,
-  });
+class _LanguageSelector extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('onboarding.language'.tr(), style: context.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+        SizedBox(height: 10.h),
+        Wrap(
+          spacing: 8.w,
+          runSpacing: 8.h,
+          children: [
+            _LanguageChip(label: 'English', locale: const Locale('en')),
+            _LanguageChip(label: 'অসমীয়া', locale: const Locale('as')),
+            _LanguageChip(label: 'हिन्दी', locale: const Locale('hi')),
+          ],
+        ),
+      ],
+    );
+  }
+}
 
-  final ThemeData theme;
-  final ColorScheme colorScheme;
-  final TextTheme textTheme;
-  final PageController pageController;
-  final int currentIndex;
-  final List<Map<String, dynamic>> onboardingData;
-  final ValueChanged<int> onPageChanged;
-  final VoidCallback onGetStarted;
+class _LanguageChip extends StatelessWidget {
+  const _LanguageChip({required this.label, required this.locale});
+
+  final String label;
+  final Locale locale;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      body: SafeArea(
-        child: Column(
+    final selected = context.locale.languageCode == locale.languageCode;
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: (_) => context.setLocale(locale),
+    );
+  }
+}
+
+class _PermissionNote extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final cs = context.theme.colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest.withValues(alpha: 0.55),
+        borderRadius: AppBorders.card,
+        border: Border.all(color: cs.outlineVariant),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16.w),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top branding
-            Padding(
-              padding: EdgeInsets.only(
-                top: AppSpacing.lg.h,
-                bottom: AppSpacing.md.h,
-              ),
-              child: Text(
-                'FlutterInit.',
-                style: textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: colorScheme.onSurface,
-                  fontSize: 22.sp,
-                ),
-              ),
-            ),
-
-            // PageView
+            Icon(Icons.location_on_outlined, color: cs.primary),
+            SizedBox(width: 12.w),
             Expanded(
-              child: PageView.builder(
-                controller: pageController,
-                itemCount: onboardingData.length,
-                onPageChanged: onPageChanged,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      // Dynamic Illustration Section
-                      Expanded(
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: AppSpacing.lg.w,
-                            ),
-                            child: onboardingData[index]['pageWidget'] as Widget,
-                          ),
-                        ),
-                      ),
-                      
-                      // Text Section
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xl.w,
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              onboardingData[index]['title'] as String,
-                              textAlign: TextAlign.center,
-                              style: textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: colorScheme.onSurface,
-                                height: 1.2,
-                                fontSize: 24.sp,
-                              ),
-                            ),
-                            SizedBox(height: AppSpacing.md.h),
-                            Text(
-                              onboardingData[index]['subtitle'] as String,
-                              textAlign: TextAlign.center,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                height: 1.5,
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 40.h),
-                    ],
-                  );
-                },
-              ),
-            ),
-
-            // Bottom Section: Dots and Button
-            Padding(
-              padding: EdgeInsets.all(AppSpacing.xl.w),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   SizedBox(height: AppSpacing.xl),
-                  // Get Started Button
-                  AppButton(
-                    label: 'shared.get_started'.tr(),
-                    onPressed: onGetStarted,
-                    variant: ButtonVariant.primary,
-                    width: ButtonSize.medium,
-                  ),
-                  SizedBox(height: AppSpacing.md),
+                  Text('onboarding.location_title'.tr(), style: context.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  SizedBox(height: 4.h),
+                  Text('onboarding.location_subtitle'.tr(), style: context.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
                 ],
               ),
             ),

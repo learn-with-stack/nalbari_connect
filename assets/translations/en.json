@@ -1,47 +1,90 @@
 {
-  "shared": {
-    "get_started": "Get Started"
-  },
-  "onboarding": {
-    "onboarding_title_1": "Your Journey,\nPerfectly Planned",
-    "onboarding_subtitle_1": "Effortlessly create and organize your\ndream trips. Start exploring now!",
-    "onboarding_title_2": "Discover\nFriends Nearby",
-    "onboarding_subtitle_2": "See where your friends are traveling and\nexplore the world together.",
-    "onboarding_title_3": "Stay Updated\nwith Top Places",
-    "onboarding_subtitle_3": "Find trending destinations and must-see attractions,\nall tailored to enhance your travel plans."
-  },
-  "home": {
-    "home_title": "Home",
-    "welcome_home": "Welcome Home!",
-    "home_subtitle": "You have successfully completed the onboarding process."
+  "app": {
+    "name": "Nalbari Connect",
+    "tagline": "Citizen services and executive action in one secure app"
   },
   "auth": {
-    "log_in": "Log in",
-    "log_in_subtitle": "Enter your email and password",
-    "email": "Email",
-    "email_required": "Email is required",
-    "email_invalid": "Enter a valid email",
-    "password": "Password",
-    "password_required": "Password is required",
-    "password_too_short": "Password must be at least 6 characters",
-    "remember_me": "Remember me",
-    "forgot_password": "Forgot Password",
-    "login_button": "Login",
-    "dont_have_account": "Don't have an account? ",
-    "sign_up": "Sign Up",
-    "create_account": "Create Account",
-    "create_account_subtitle": "Create a new account to get started.",
-    "name": "Name",
-    "name_required": "Name is required",
-    "confirm_password": "Confirm Password",
-    "confirm_password_required": "Confirm password is required",
-    "passwords_do_not_match": "Passwords do not match",
-    "create_account_button": "Create Account",
-    "already_have_account": "Already have an account? ",
-    "sign_in": "Sign In",
-    "or_continue_with": "Or Continue With Account",
-    "forgot_password_title": "Forgot Password",
-    "forgot_password_subtitle": "Enter your email address to receive a reset link\nand regain access to your account.",
-    "reset_link_sent": "Password reset link sent to your email."
+    "welcome": "Welcome",
+    "phone_title": "Sign in with your phone number",
+    "phone_number": "Phone Number",
+    "phone_hint": "9876543210",
+    "continue": "Continue",
+    "otp_title": "Verify OTP",
+    "otp_subtitle": "Enter the 6-digit code sent to your phone",
+    "otp": "OTP",
+    "verify": "Verify and continue",
+    "secured": "Your information is secured and encrypted",
+    "demo_hint": "Demo: use 123456. Admin phone: 9999999999"
+  },
+  "onboarding": {
+    "title": "Connect with your constituency",
+    "subtitle": "Read updates, book appointments, raise complaints, and track official action.",
+    "language": "Choose language",
+    "location_title": "Location permission",
+    "location_subtitle": "Location helps tag complaints to the right ward or panchayat.",
+    "start": "Get started"
+  },
+  "home": {
+    "latest_news": "Latest News",
+    "book_appointment": "Book Appointment",
+    "raise_complaint": "Raise Complaint",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "appointment": {
+    "title": "Book Appointment",
+    "select_date": "Select Date",
+    "select_time": "Select Time",
+    "full_name": "Full Name",
+    "full_name_hint": "Enter your full name",
+    "id_proof": "ID Proof",
+    "upload_id": "Upload ID Proof",
+    "id_saved": "Saved ID proof will be used",
+    "book": "Book Appointment",
+    "success": "Appointment request submitted"
+  },
+  "complaint": {
+    "title": "Raise Complaint",
+    "area_type": "Area Type",
+    "ward": "Ward",
+    "panchayat": "Panchayat",
+    "ward_number": "Ward Number",
+    "panchayat_number": "Panchayat Number",
+    "describe": "Describe your complaint",
+    "describe_hint": "Please provide details about your complaint...",
+    "media": "Add Photos or Videos (Optional)",
+    "upload_media": "Upload Photos or Videos",
+    "submit": "Submit Complaint",
+    "success": "Complaint submitted"
+  },
+  "admin": {
+    "dashboard": "Admin Dashboard",
+    "search": "Search requests...",
+    "appointments": "Appointments",
+    "complaints": "Complaints",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "total": "Total",
+    "all": "All",
+    "approve": "Approve",
+    "reject": "Reject",
+    "all_appointments": "All Appointments"
+  },
+  "profile": {
+    "title": "Profile",
+    "appointments": "Appointments",
+    "complaints": "Complaints",
+    "settings": "Settings",
+    "about": "About App",
+    "faq": "FAQ",
+    "privacy": "Privacy & Security"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "dark_mode": "Follow system theme",
+    "version": "Version"
   }
 }

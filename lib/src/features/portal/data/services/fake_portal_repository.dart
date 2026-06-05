@@ -1,0 +1,94 @@
+import 'package:nalbari_connect/src/features/portal/data/models/portal_models.dart';
+
+class FakePortalRepository {
+  Future<List<NewsItem>> fetchNews() async {
+    await _delay();
+    return [
+      NewsItem(
+        id: 'n1',
+        title: 'New Digital Services Portal Launched',
+        summary: 'Government introduces streamlined portal for citizen services with enhanced security features.',
+        body: 'The constituency office has launched a simplified digital services flow for appointments, complaints, and official updates. Citizens can now submit requests digitally and track the progress from their profile.',
+        publishedAt: DateTime(2026, 6, 4),
+      ),
+      NewsItem(
+        id: 'n2',
+        title: 'Healthcare Appointment System Update',
+        summary: 'Enhanced booking system now supports faster appointment review and citizen notifications.',
+        body: 'The appointment queue has been improved so office staff can approve, reject, or reschedule requests with clear remarks. Citizens will receive status updates after review.',
+        publishedAt: DateTime(2026, 6, 3),
+      ),
+      NewsItem(
+        id: 'n3',
+        title: 'Citizen Feedback Initiative Results',
+        summary: 'Recent complaint resolution rate reaches 85% as governance focuses on responsive action.',
+        body: 'Public feedback from ward and panchayat areas is being reviewed weekly to understand the most common local issues and route them to the correct departments.',
+        publishedAt: DateTime(2026, 6, 2),
+      ),
+    ];
+  }
+
+  Future<List<AppointmentRequest>> fetchAppointments() async {
+    await _delay();
+    return [
+      AppointmentRequest(
+        id: 'a1',
+        fullName: 'Sarah Johnson',
+        withPerson: 'MLA Office',
+        date: DateTime(2026, 6, 8),
+        time: '10:30 AM',
+        reason: 'Annual checkup and blood pressure monitoring',
+        status: AppointmentStatus.pending,
+        createdAt: DateTime(2026, 6, 5),
+      ),
+      AppointmentRequest(
+        id: 'a2',
+        fullName: 'David Martinez',
+        withPerson: 'MLA PA',
+        date: DateTime(2026, 6, 9),
+        time: '02:00 PM',
+        reason: 'Follow-up consultation for knee injury',
+        status: AppointmentStatus.pending,
+        createdAt: DateTime(2026, 6, 5),
+      ),
+      AppointmentRequest(
+        id: 'a3',
+        fullName: 'Lisa Anderson',
+        withPerson: 'MLA Office',
+        date: DateTime(2026, 6, 7),
+        time: '09:00 AM',
+        reason: 'Dental cleaning and oral examination',
+        status: AppointmentStatus.approved,
+        createdAt: DateTime(2026, 6, 4),
+      ),
+      AppointmentRequest(
+        id: 'a4',
+        fullName: 'Robert Taylor',
+        withPerson: 'MLA PA',
+        date: DateTime(2026, 6, 10),
+        time: '03:30 PM',
+        reason: 'Physical therapy session for back pain',
+        status: AppointmentStatus.pending,
+        createdAt: DateTime(2026, 6, 5),
+      ),
+    ];
+  }
+
+  Future<List<ComplaintRequest>> fetchComplaints() async {
+    await _delay();
+    return [
+      ComplaintRequest(
+        id: 'c1',
+        reporterName: 'Verified Resident',
+        areaType: AreaType.ward,
+        areaNumber: '4',
+        description: 'Street light not working near the school junction for four days.',
+        status: ComplaintStatus.newRequest,
+        priority: ComplaintPriority.medium,
+        createdAt: DateTime(2026, 6, 5),
+      ),
+    ];
+  }
+
+  Future<void> _delay() => Future<void>.delayed(const Duration(milliseconds: 450));
+}

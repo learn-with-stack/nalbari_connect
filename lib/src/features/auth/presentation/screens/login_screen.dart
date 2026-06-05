@@ -1,7 +1,5 @@
-import 'package:nalbari_connect/src/imports/core_imports.dart';
-import 'package:nalbari_connect/src/imports/packages_imports.dart';
-
-import 'package:nalbari_connect/src/features/auth/presentation/providers/auth_provider.dart';
+import 'package:nalbari_connect/src/features/auth/presentation/providers/app_auth_provider.dart';
+import 'package:nalbari_connect/src/imports/imports.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -12,261 +10,72 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  final _phoneController = TextEditingController(text: '9876543210');
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authControllerProvider);
-
+    final auth = ref.watch(appAuthProvider);
     final cs = context.theme.colorScheme;
-    final tt = context.theme.textTheme;
 
-    Future<void> handleLogin() async {
-      if (!(_formKey.currentState?.validate() ?? false)) return;
-      
-
-      ref.read(authControllerProvider.notifier).login(
-        context: context, 
-        email: _emailController.text, 
-        password: _passwordController.text,
-      );
-    }
-
-    return _LoginView(
-      formKey: _formKey,
-      emailController: _emailController,
-      passwordController: _passwordController,
-      obscurePassword: _obscurePassword,
-      isLoading: isLoading,
-      onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
-      onLogin: handleLogin,
-      cs: cs,
-      tt: tt,
-    );
-  }
-}
-
-class _LoginView extends StatelessWidget {
-  const _LoginView({
-    required this.formKey,
-    required this.emailController,
-    required this.passwordController,
-    required this.obscurePassword,
-    required this.isLoading,
-    required this.onToggleObscure,
-    required this.onLogin,
-    required this.cs,
-    required this.tt,
-  });
-
-  final GlobalKey<FormState> formKey;
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-  final bool obscurePassword;
-  final bool isLoading;
-  final VoidCallback onToggleObscure;
-  final VoidCallback onLogin;
-  final ColorScheme cs;
-  final TextTheme tt;
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: AppSpacing.xl.h),
-                Text(
-                  'auth.log_in'.tr(),
-                  style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: AppSpacing.sm.h),
-                Text(
-                  'auth.log_in_subtitle'.tr(),
-                  textAlign: TextAlign.center,
-                  style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                ),
-                SizedBox(height: AppSpacing.xxxl.h),
-                // Form Card
-                Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      AppTextField(
-                        controller: emailController,
-                        enabled: !isLoading,
-                        label: 'auth.email'.tr(),
-                        prefixIcon: const Icon(Icons.email_outlined),
-                        validator: (v) {
-                          if (AppUtils.isBlank(v)) {
-                            return 'auth.email_required'.tr();
-                          }
-                          if (!AppUtils.isValidEmail(v!)) {
-                            return 'auth.email_invalid'.tr();
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: AppSpacing.md.h),
-                      AppTextField(
-                        controller: passwordController,
-                        enabled: !isLoading,
-                        label: 'auth.password'.tr(),
-                        obscureText: obscurePassword,
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: IconButton(
-                          icon: Icon(obscurePassword ? Icons.visibility_off : Icons.visibility),
-                          onPressed: onToggleObscure,
-                        ),
-                         validator: (v) {
-                          if (AppUtils.isBlank(v)) {
-                            return 'auth.password_required'.tr();
-                          }
-                          if (v!.length < 6) {
-                            return 'auth.password_too_short'.tr();
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: AppSpacing.sm.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            spacing: 5.w,
-                            children: [
-                              SizedBox(
-                                width: 20.w,
-                                height: 20.h,
-                                child: Checkbox(
-                                  value: true,
-                                  onChanged: (value) {},
-                                ),
-                              ),
-                              Text(
-                                'auth.remember_me'.tr(),
-                                style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
-                              ),
-                            ],
-                          ),
-                          TextButton(
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                            ),
-                            onPressed: () {
-                              context.push(AppRoutes.forgotPassword);
-                            },
-                            child: Text(
-                              'auth.forgot_password'.tr(),
-                              style: tt.bodySmall?.copyWith(
-                                color: cs.onSurfaceVariant,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: AppSpacing.lg.h),
-                      AppButton(
-                        label: 'Sign In',
-                        isLoading: isLoading,
-                        onPressed: isLoading ? null : onLogin,
-                        width: ButtonSize.large,
-                        isFullWidth: false,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: AppSpacing.xxxl.h),
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 20.w,
-                      children: [
-                        SizedBox(
-                          width: 50.w,
-                          height: 50.w,
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFFEA4335).withValues(alpha: 0.8),
-                              padding: EdgeInsets.symmetric(horizontal: 10.w),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.googleIcon),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 50.w,
-                          height: 50.w,
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFF4285F4),
-                              padding: EdgeInsets.symmetric(horizontal: 10.w),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.facebookIcon),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 50.w,
-                          height: 50.w,
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFF000000),
-                              padding: EdgeInsets.symmetric(horizontal: 10.w),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.appleIcon),
-                          ),
-                        ),
-                      ],
+            padding: EdgeInsets.all(24.w),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(child: SvgPicture.asset(AppAssets.logo, width: 78.w, height: 78.w)),
+                  SizedBox(height: 28.h),
+                  Text('auth.welcome'.tr(), textAlign: TextAlign.center, style: context.textTheme.titleMedium?.copyWith(color: cs.onSurfaceVariant)),
+                  SizedBox(height: 6.h),
+                  Text('app.name'.tr(), textAlign: TextAlign.center, style: context.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800)),
+                  SizedBox(height: 12.h),
+                  Text('auth.phone_title'.tr(), textAlign: TextAlign.center, style: context.textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant)),
+                  SizedBox(height: 34.h),
+                  AppTextField(
+                    controller: _phoneController,
+                    label: 'auth.phone_number'.tr(),
+                    hint: 'auth.phone_hint'.tr(),
+                    keyboardType: TextInputType.phone,
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.only(left: 14.w, right: 10.w, top: 14.h),
+                      child: Text('+91', style: context.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
                     ),
-                    SizedBox(height: AppSpacing.xl.h),
-                  ],
-                ),
-                InkWell(
-                  onTap: () {
-                    context.push(AppRoutes.signup);
-                  },
-                  child: RichText(
-                    text: TextSpan(
-                      text: 'auth.dont_have_account'.tr(),
-                      style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                      children: [
-                        TextSpan(
-                          text: 'auth.sign_up'.tr(),
-                          style: TextStyle(
-                            color: cs.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
+                    validator: (value) {
+                      final digits = value?.replaceAll(RegExp(r'\D'), '') ?? '';
+                      if (digits.length != 10) return 'Enter a valid 10-digit phone number';
+                      return null;
+                    },
                   ),
-                ),
-              ],
+                  SizedBox(height: 18.h),
+                  FilledButton(
+                    onPressed: auth.isLoading
+                        ? null
+                        : () async {
+                            if (!(_formKey.currentState?.validate() ?? false)) return;
+                            final phone = _phoneController.text.replaceAll(RegExp(r'\D'), '');
+                            await ref.read(appAuthProvider.notifier).requestOtp(phone);
+                            if (context.mounted) context.go(AppRoutes.verifyOtp);
+                          },
+                    child: auth.isLoading
+                        ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                        : Text('auth.continue'.tr()),
+                  ),
+                  SizedBox(height: 12.h),
+                  Text('auth.secured'.tr(), textAlign: TextAlign.center, style: context.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+                  SizedBox(height: 8.h),
+                  Text('auth.demo_hint'.tr(), textAlign: TextAlign.center, style: context.textTheme.bodySmall?.copyWith(color: cs.primary)),
+                ],
+              ),
             ),
           ),
         ),

@@ -14,6 +14,8 @@ class LocalizationWrapper extends StatelessWidget {
     return EasyLocalization(
       supportedLocales: const [
         Locale('en'),
+        Locale('as'),
+        Locale('hi'),
       ],
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),

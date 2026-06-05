@@ -48,9 +48,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     children: [
                       SizedBox(
                         height: 5.h,
-                        child: DecoratedBox(
+                        child: const DecoratedBox(
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFF9933),
+                            color: Color(0xFFFF9933),
                             borderRadius: AppBorders.full,
                           ),
                         ),
@@ -65,7 +65,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               Center(child: AppLogoMark(size: 84.w)),
                               SizedBox(height: 18.h),
                               Text(
-                                'Nalbari Connect',
+                                'app.name'.tr(),
                                 textAlign: TextAlign.center,
                                 style: context.textTheme.headlineSmall?.copyWith(
                                   color: const Color(0xFF8F4E00),
@@ -74,7 +74,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               SizedBox(height: 6.h),
                               Text(
-                                'Empowering Citizens, Enabling Growth',
+                                'app.tagline'.tr(),
                                 textAlign: TextAlign.center,
                                 style: context.textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
                               ),
@@ -82,7 +82,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               _DemoLoginCard(onPick: (phone) => _phoneController.text = phone),
                               SizedBox(height: 22.h),
                               Text(
-                                'Mobile Number',
+                                'auth.phone_number'.tr(),
                                 style: context.textTheme.labelMedium?.copyWith(
                                   color: cs.onSurfaceVariant,
                                   fontWeight: FontWeight.w700,
@@ -100,7 +100,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 },
                                 decoration: InputDecoration(
                                   counterText: '',
-                                  hintText: '00000 00000',
+                                  hintText: 'auth.phone_hint'.tr(),
                                   prefixIcon: Padding(
                                     padding: EdgeInsets.only(left: 14.w, right: 12.w),
                                     child: Row(
@@ -135,7 +135,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 icon: auth.isLoading
                                     ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
                                     : const Icon(Icons.send_outlined),
-                                label: const Text('Send OTP'),
+                                label: Text('auth.continue'.tr()),
                                 style: FilledButton.styleFrom(
                                   minimumSize: Size.fromHeight(52.h),
                                   backgroundColor: const Color(0xFF8F4E00),
@@ -144,7 +144,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               SizedBox(height: 14.h),
                               Text(
-                                'Demo OTP: 123456',
+                                'auth.demo_hint'.tr(),
                                 textAlign: TextAlign.center,
                                 style: context.textTheme.labelSmall?.copyWith(color: cs.primary, fontWeight: FontWeight.w800),
                               ),
@@ -158,9 +158,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 SizedBox(height: 16.h),
                 Row(
                   children: [
-                    Expanded(child: _InfoTile(icon: Icons.security_outlined, title: 'Secure Gateway', body: '256-bit encryption for all constituency data.')),
+                    const Expanded(child: _InfoTile(icon: Icons.security_outlined, title: 'Secure Gateway', body: '256-bit encryption for all constituency data.')),
                     SizedBox(width: 10.w),
-                    Expanded(child: _InfoTile(icon: Icons.verified_outlined, title: 'Govt. Verified', body: 'Official services for Nalbari, Assam.')),
+                    const Expanded(child: _InfoTile(icon: Icons.verified_outlined, title: 'Govt. Verified', body: 'Official services for Nalbari, Assam.')),
                   ],
                 ),
                 SizedBox(height: 30.h),

@@ -141,24 +141,27 @@ class SettingsScreen extends ConsumerWidget {
               ChoiceChip(
                 label: const Text('English'),
                 selected: context.locale.languageCode == 'en',
-                onSelected: (_) {
-                  context.setLocale(const Locale('en'));
+                onSelected: (_) async {
+                  await context.setLocale(const Locale('en'));
+                  if (!context.mounted) return;
                   context.showSuccessSnackBar('Language changed to English.');
                 },
               ),
               ChoiceChip(
                 label: const Text('Assamese'),
                 selected: context.locale.languageCode == 'as',
-                onSelected: (_) {
-                  context.setLocale(const Locale('as'));
+                onSelected: (_) async {
+                  await context.setLocale(const Locale('as'));
+                  if (!context.mounted) return;
                   context.showSuccessSnackBar('Language changed to Assamese.');
                 },
               ),
               ChoiceChip(
                 label: const Text('Hindi'),
                 selected: context.locale.languageCode == 'hi',
-                onSelected: (_) {
-                  context.setLocale(const Locale('hi'));
+                onSelected: (_) async {
+                  await context.setLocale(const Locale('hi'));
+                  if (!context.mounted) return;
                   context.showSuccessSnackBar('Language changed to Hindi.');
                 },
               ),

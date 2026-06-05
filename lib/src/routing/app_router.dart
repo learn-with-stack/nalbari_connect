@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nalbari_connect/src/features/auth/data/models/app_session.dart';
@@ -18,12 +19,17 @@ import 'package:nalbari_connect/src/routing/app_routes.dart';
 import 'package:nalbari_connect/src/routing/global_navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final auth = ref.watch(appAuthProvider);
+  final refreshNotifier = _RouterRefreshNotifier();
+  ref
+    ..onDispose(refreshNotifier.dispose)
+    ..listen(appAuthProvider, (_, __) => refreshNotifier.refresh());
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.splash,
+    refreshListenable: refreshNotifier,
     redirect: (context, state) {
+      final auth = ref.read(appAuthProvider);
       final location = state.matchedLocation;
       final publicRoutes = {
         AppRoutes.splash,
@@ -42,10 +48,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         if (location == AppRoutes.splash) {
           return auth.hasCompletedLanguageSetup ? AppRoutes.login : AppRoutes.onboarding;
         }
-        if (!auth.hasCompletedLanguageSetup && location != AppRoutes.onboarding) {
-          return AppRoutes.onboarding;
+        if (publicRoutes.contains(location)) {
+          return null;
         }
-        return publicRoutes.contains(location) ? null : AppRoutes.login;
+        return AppRoutes.login;
       }
 
       if (publicRoutes.contains(location)) {
@@ -155,3 +161,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+class _RouterRefreshNotifier extends ChangeNotifier {
+  void refresh() => notifyListeners();
+}

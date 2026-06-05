@@ -49,9 +49,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                     children: [
                       SizedBox(
                         height: 5.h,
-                        child: DecoratedBox(
+                        child: const DecoratedBox(
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFF9933),
+                            color: Color(0xFFFF9933),
                             borderRadius: AppBorders.full,
                           ),
                         ),
@@ -76,7 +76,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                             ),
                             SizedBox(height: 26.h),
                             Text(
-                              'Verify Identity',
+                              'auth.otp_title'.tr(),
                               textAlign: TextAlign.center,
                               style: context.textTheme.headlineSmall?.copyWith(
                                 color: const Color(0xFF8F4E00),
@@ -96,12 +96,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                             ),
                             SizedBox(height: 20.h),
                             Text.rich(
-                              TextSpan(
+                              const TextSpan(
                                 text: 'Resend code in ',
                                 children: [
                                   TextSpan(
                                     text: '00:28',
-                                    style: const TextStyle(color: Color(0xFF8F4E00), fontWeight: FontWeight.w900),
+                                    style: TextStyle(color: Color(0xFF8F4E00), fontWeight: FontWeight.w900),
                                   ),
                                 ],
                               ),
@@ -118,7 +118,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                               icon: auth.isLoading
                                   ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
                                   : const Icon(Icons.lock_outline),
-                              label: const Text('Verify & Login'),
+                              label: Text('auth.verify'.tr()),
                               style: FilledButton.styleFrom(
                                 minimumSize: Size.fromHeight(58.h),
                                 backgroundColor: const Color(0xFF9A5700),

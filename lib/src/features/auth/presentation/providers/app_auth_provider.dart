@@ -72,7 +72,7 @@ class AppAuthController extends StateNotifier<AppAuthState> {
 
   Future<bool> verifyOtp(String otp) async {
     final phone = state.pendingPhone;
-    if (phone == null || otp.length != 6) return false;
+    if (phone == null || otp != '123456') return false;
 
     state = state.copyWith(isLoading: true);
     AppLogger.info('[FAKE API] POST /auth/verify-otp -> $phone');

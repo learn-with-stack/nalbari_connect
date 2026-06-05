@@ -30,7 +30,7 @@ class OnboardingPage extends ConsumerWidget {
                     Center(child: AppLogoMark(size: 126.w)),
                     SizedBox(height: 22.h),
                     Text(
-                      'Nalbari Connect',
+                      'app.name'.tr(),
                       textAlign: TextAlign.center,
                       style: context.textTheme.headlineLarge?.copyWith(
                         color: cs.primary,
@@ -39,11 +39,17 @@ class OnboardingPage extends ConsumerWidget {
                     ),
                     SizedBox(height: 8.h),
                     Text(
-                      'Connecting Nalbari with Leadership',
+                      'onboarding.title'.tr(),
                       textAlign: TextAlign.center,
                       style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                     ),
                     SizedBox(height: 4.h),
+                    Text(
+                      'Connecting Nalbari with Leadership',
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                    ),
+                    SizedBox(height: 2.h),
                     Text(
                       'নলবাৰীক নেতৃত্বৰ সৈতে সংযোগ কৰা',
                       textAlign: TextAlign.center,
@@ -56,24 +62,24 @@ class OnboardingPage extends ConsumerWidget {
                       style: context.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
                     ),
                     SizedBox(height: 34.h),
-                    _SectionLabel(),
+                    const _SectionLabel(),
                     SizedBox(height: 14.h),
-                    _LanguageCard(
-                      title: 'অসমীয়া',
+                    const _LanguageCard(
+                      title: 'অসমীয়া',
                       subtitle: 'Assamese',
-                      locale: const Locale('as'),
+                      locale: Locale('as'),
                     ),
                     SizedBox(height: 10.h),
-                    _LanguageCard(
+                    const _LanguageCard(
                       title: 'English',
-                      subtitle: 'Primary',
-                      locale: const Locale('en'),
+                      subtitle: 'English',
+                      locale: Locale('en'),
                     ),
                     SizedBox(height: 10.h),
-                    _LanguageCard(
+                    const _LanguageCard(
                       title: 'हिन्दी',
                       subtitle: 'Hindi',
-                      locale: const Locale('hi'),
+                      locale: Locale('hi'),
                     ),
                     SizedBox(height: 26.h),
                     FilledButton(
@@ -92,14 +98,14 @@ class OnboardingPage extends ConsumerWidget {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text('Get Started'),
+                              Text('onboarding.start'.tr()),
                               SizedBox(width: 8.w),
                               const Icon(Icons.arrow_forward),
                             ],
                           ),
                           SizedBox(height: 2.h),
                           Text(
-                            'আৰম্ভ কৰক  •  शुरू करें',
+                            'আৰম্ভ কৰক  |  शुरू करें',
                             style: context.textTheme.labelSmall?.copyWith(color: const Color(0xFF2E1500).withValues(alpha: 0.75)),
                           ),
                         ],
@@ -109,9 +115,9 @@ class OnboardingPage extends ConsumerWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _TrustChip(icon: Icons.verified_user_outlined, label: 'High Trust'),
+                        const _TrustChip(icon: Icons.verified_user_outlined, label: 'High Trust'),
                         SizedBox(width: 14.w),
-                        _TrustChip(icon: Icons.security_outlined, label: 'Encrypted'),
+                        const _TrustChip(icon: Icons.security_outlined, label: 'Encrypted'),
                       ],
                     ),
                   ],
@@ -121,7 +127,7 @@ class OnboardingPage extends ConsumerWidget {
             Padding(
               padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 14.h),
               child: Text(
-                '© 2024 Nalbari Constituency | নলবাৰী বিধানসভা সমষ্টি',
+                'Copyright 2024 Nalbari Constituency | নলবাৰী বিধানসভা সমষ্টি',
                 textAlign: TextAlign.center,
                 style: context.textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
               ),
@@ -134,6 +140,8 @@ class OnboardingPage extends ConsumerWidget {
 }
 
 class _SectionLabel extends StatelessWidget {
+  const _SectionLabel();
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -173,7 +181,10 @@ class _LanguageCard extends StatelessWidget {
     final cs = context.colors;
 
     return InkWell(
-      onTap: () => context.setLocale(locale),
+      onTap: () async {
+        await context.setLocale(locale);
+        if (context.mounted) context.showSuccessSnackBar('Language changed.');
+      },
       borderRadius: AppBorders.card,
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -204,7 +215,7 @@ class _LanguageCard extends StatelessWidget {
                     Text(title, style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
                     SizedBox(height: 3.h),
                     Text(
-                      selected ? 'Primary' : subtitle,
+                      selected ? 'Selected' : subtitle,
                       style: context.textTheme.labelSmall?.copyWith(
                         color: selected ? const Color(0xFFFF9933) : cs.onSurfaceVariant,
                         fontWeight: selected ? FontWeight.w800 : FontWeight.w600,

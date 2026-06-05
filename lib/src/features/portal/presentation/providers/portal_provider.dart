@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:nalbari_connect/src/features/portal/data/models/portal_models.dart';
 import 'package:nalbari_connect/src/features/portal/data/services/fake_portal_repository.dart';
 
@@ -64,28 +65,48 @@ class PortalController extends StateNotifier<PortalState> {
     }
   }
 
-  void bookAppointment(AppointmentRequest appointment) {
-    state = state.copyWith(appointments: [appointment, ...state.appointments]);
+  Future<void> bookAppointment(AppointmentRequest appointment) async {
+    final created = await _repository.createAppointment(appointment);
+    state = state.copyWith(appointments: [created, ...state.appointments]);
   }
 
-  void submitComplaint(ComplaintRequest complaint) {
-    state = state.copyWith(complaints: [complaint, ...state.complaints]);
+  Future<void> submitComplaint(ComplaintRequest complaint) async {
+    final created = await _repository.createComplaint(complaint);
+    state = state.copyWith(complaints: [created, ...state.complaints]);
   }
 
-  void updateAppointmentStatus(String id, AppointmentStatus status) {
+  Future<void> updateAppointmentStatus(String id, AppointmentStatus status) async {
+    AppointmentRequest? existing;
+    for (final appointment in state.appointments) {
+      if (appointment.id == id) {
+        existing = appointment;
+        break;
+      }
+    }
+    if (existing == null) return;
+    final updated = await _repository.updateAppointmentStatus(existing, status);
     state = state.copyWith(
       appointments: [
         for (final appointment in state.appointments)
-          appointment.id == id ? appointment.copyWith(status: status) : appointment,
+          appointment.id == id ? updated : appointment,
       ],
     );
   }
 
-  void updateComplaintStatus(String id, ComplaintStatus status) {
+  Future<void> updateComplaintStatus(String id, ComplaintStatus status) async {
+    ComplaintRequest? existing;
+    for (final complaint in state.complaints) {
+      if (complaint.id == id) {
+        existing = complaint;
+        break;
+      }
+    }
+    if (existing == null) return;
+    final updated = await _repository.updateComplaintStatus(existing, status);
     state = state.copyWith(
       complaints: [
         for (final complaint in state.complaints)
-          complaint.id == id ? complaint.copyWith(status: status) : complaint,
+          complaint.id == id ? updated : complaint,
       ],
     );
   }

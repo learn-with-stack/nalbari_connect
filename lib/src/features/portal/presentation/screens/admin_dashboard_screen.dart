@@ -43,7 +43,24 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () => ref.read(portalControllerProvider.notifier).load(),
-        child: ListView(
+        child: state.isLoading
+            ? ListView(
+                children: [
+                  SizedBox(height: 260.h),
+                  const Center(child: CircularProgressIndicator()),
+                ],
+              )
+            : state.error != null
+                ? ListView(
+                    padding: EdgeInsets.all(24.w),
+                    children: [
+                      AppErrorWidget(
+                        message: state.error!,
+                        onRetry: () => ref.read(portalControllerProvider.notifier).load(),
+                      ),
+                    ],
+                  )
+                : ListView(
           padding: EdgeInsets.all(16.w),
           children: [
             TextField(

@@ -141,6 +141,8 @@ Response:
     "status": "newRequest",
     "priority": "medium",
     "media_url": null,
+    "latitude": 26.444,
+    "longitude": 91.441,
     "created_at": "2026-06-05T00:00:00Z"
   }
 ]

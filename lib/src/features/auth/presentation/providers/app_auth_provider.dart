@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:nalbari_connect/src/features/auth/data/models/app_session.dart';
 import 'package:nalbari_connect/src/services/secure_storage_service.dart';
+import 'package:nalbari_connect/src/utils/logger.dart';
 
 final appAuthProvider = StateNotifierProvider<AppAuthController, AppAuthState>((ref) {
   return AppAuthController();
@@ -40,6 +42,7 @@ class AppAuthController extends StateNotifier<AppAuthState> {
 
   Future<bool> requestOtp(String phone) async {
     state = state.copyWith(isLoading: true);
+    AppLogger.info('[FAKE API] POST /auth/request-otp -> $phone');
     await Future<void>.delayed(const Duration(milliseconds: 500));
     state = state.copyWith(
       status: AuthStatus.unauthenticated,
@@ -54,6 +57,7 @@ class AppAuthController extends StateNotifier<AppAuthState> {
     if (phone == null || otp.length != 6) return false;
 
     state = state.copyWith(isLoading: true);
+    AppLogger.info('[FAKE API] POST /auth/verify-otp -> $phone');
     await Future<void>.delayed(const Duration(milliseconds: 650));
 
     final normalizedPhone = phone.replaceAll(RegExp(r'\D'), '');
@@ -68,6 +72,7 @@ class AppAuthController extends StateNotifier<AppAuthState> {
     );
 
     await _persist(user);
+    AppLogger.success('[AUTH] Logged in as ${user.role.name}');
     state = AppAuthState(
       status: AuthStatus.authenticated,
       user: user,

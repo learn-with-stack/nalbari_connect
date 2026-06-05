@@ -80,20 +80,21 @@ class _AppointmentScreenState extends ConsumerState<AppointmentScreen> {
           ),
           SizedBox(height: 26.h),
           FilledButton(
-            onPressed: () {
+            onPressed: () async {
               final name = _nameController.text.trim().isEmpty ? (auth.user?.name ?? 'Verified Resident') : _nameController.text.trim();
-              ref.read(portalControllerProvider.notifier).bookAppointment(
-                    AppointmentRequest(
-                      id: DateTime.now().microsecondsSinceEpoch.toString(),
-                      fullName: name,
-                      withPerson: 'MLA Office',
-                      date: _date,
-                      time: _time,
-                      reason: 'Personal appointment request',
-                      status: AppointmentStatus.pending,
-                      createdAt: DateTime.now(),
-                    ),
-                  );
+              await ref.read(portalControllerProvider.notifier).bookAppointment(
+                AppointmentRequest(
+                  id: DateTime.now().microsecondsSinceEpoch.toString(),
+                  fullName: name,
+                  withPerson: 'MLA Office',
+                  date: _date,
+                  time: _time,
+                  reason: 'Personal appointment request',
+                  status: AppointmentStatus.pending,
+                  createdAt: DateTime.now(),
+                ),
+              );
+              if (!context.mounted) return;
               context.showSuccessSnackBar('appointment.success'.tr());
               context.pop();
             },

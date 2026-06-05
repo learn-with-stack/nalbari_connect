@@ -1,4 +1,4 @@
-package com.example.nalbari_connect
+package com.learnwithstack.nalbari_connect
 
 import io.flutter.embedding.android.FlutterActivity
 

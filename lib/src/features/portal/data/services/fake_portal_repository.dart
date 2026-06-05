@@ -1,7 +1,9 @@
 import 'package:nalbari_connect/src/features/portal/data/models/portal_models.dart';
+import 'package:nalbari_connect/src/utils/logger.dart';
 
 class FakePortalRepository {
   Future<List<NewsItem>> fetchNews() async {
+    AppLogger.info('[FAKE API] GET /news');
     await _delay();
     return [
       NewsItem(
@@ -29,6 +31,7 @@ class FakePortalRepository {
   }
 
   Future<List<AppointmentRequest>> fetchAppointments() async {
+    AppLogger.info('[FAKE API] GET /appointments');
     await _delay();
     return [
       AppointmentRequest(
@@ -75,6 +78,7 @@ class FakePortalRepository {
   }
 
   Future<List<ComplaintRequest>> fetchComplaints() async {
+    AppLogger.info('[FAKE API] GET /complaints');
     await _delay();
     return [
       ComplaintRequest(
@@ -88,6 +92,36 @@ class FakePortalRepository {
         createdAt: DateTime(2026, 6, 5),
       ),
     ];
+  }
+
+  Future<AppointmentRequest> createAppointment(AppointmentRequest appointment) async {
+    AppLogger.info('[FAKE API] POST /appointments -> ${appointment.fullName}');
+    await _delay();
+    return appointment;
+  }
+
+  Future<ComplaintRequest> createComplaint(ComplaintRequest complaint) async {
+    AppLogger.info('[FAKE API] POST /complaints -> ${complaint.areaType.name} ${complaint.areaNumber}');
+    await _delay();
+    return complaint;
+  }
+
+  Future<AppointmentRequest> updateAppointmentStatus(
+    AppointmentRequest appointment,
+    AppointmentStatus status,
+  ) async {
+    AppLogger.info('[FAKE API] PATCH /appointments/${appointment.id}/status -> ${status.name}');
+    await _delay();
+    return appointment.copyWith(status: status);
+  }
+
+  Future<ComplaintRequest> updateComplaintStatus(
+    ComplaintRequest complaint,
+    ComplaintStatus status,
+  ) async {
+    AppLogger.info('[FAKE API] PATCH /complaints/${complaint.id}/status -> ${status.name}');
+    await _delay();
+    return complaint.copyWith(status: status);
   }
 
   Future<void> _delay() => Future<void>.delayed(const Duration(milliseconds: 450));

@@ -20,7 +20,7 @@ class CitizenHomeScreen extends ConsumerWidget {
               padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 8.h),
               child: Row(
                 children: [
-                  SvgPicture.asset(AppAssets.logo, width: 38.w, height: 38.w),
+                  AppLogoMark(size: 38.w),
                   SizedBox(width: 10.w),
                   Expanded(
                     child: Column(

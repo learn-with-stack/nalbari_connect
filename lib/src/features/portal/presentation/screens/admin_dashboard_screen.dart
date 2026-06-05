@@ -34,7 +34,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         title: Text('admin.dashboard'.tr()),
         leading: Padding(
           padding: EdgeInsets.all(10.w),
-          child: SvgPicture.asset(AppAssets.logo),
+          child: AppLogoMark(size: 32.w),
         ),
         actions: [
           IconButton(onPressed: () => context.push(AppRoutes.profile), icon: const Icon(Icons.person_outline)),

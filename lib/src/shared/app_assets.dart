@@ -6,12 +6,11 @@ class AppAssets {
   static const String _imagesPath = '$_basePath/images';
 
   // SVGs
-  static const String appLogo = '$_iconsPath/app_logo.svg';
-  static const String logo = appLogo;
   static const String googleIcon = '$_iconsPath/google.svg';
   static const String facebookIcon = '$_iconsPath/facebook.svg';
   static const String appleIcon = '$_iconsPath/apple.svg';
 
   // PNGs
+  static const String logo = '$_imagesPath/logo.png';
   static const String splashLogo = '$_imagesPath/splash.png';
 }

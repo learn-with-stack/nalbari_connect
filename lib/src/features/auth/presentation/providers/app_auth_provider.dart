@@ -17,11 +17,22 @@ class AppAuthController extends StateNotifier<AppAuthState> {
   static const _roleKey = 'session.role';
   static const _tokenKey = 'session.token';
   static const _idProofKey = 'session.idProofLinked';
+  static const _languageSetupKey = 'app.languageSetupComplete';
+  static const _lastOpenedAtKey = 'app.lastOpenedAt';
 
   Future<void> restoreSession() async {
     final storage = SecureStorageService.instance;
     final values = <String, String?>{};
-    for (final key in [_idKey, _phoneKey, _nameKey, _roleKey, _tokenKey, _idProofKey]) {
+    for (final key in [
+      _idKey,
+      _phoneKey,
+      _nameKey,
+      _roleKey,
+      _tokenKey,
+      _idProofKey,
+      _languageSetupKey,
+      _lastOpenedAtKey,
+    ]) {
       final result = await storage.read(key);
       result.fold((_) => values[key] = null, (value) => values[key] = value);
     }
@@ -35,9 +46,16 @@ class AppAuthController extends StateNotifier<AppAuthState> {
       'idProofLinked': values[_idProofKey],
     });
 
-    state = user == null
-        ? const AppAuthState(status: AuthStatus.unauthenticated)
-        : AppAuthState(status: AuthStatus.authenticated, user: user);
+    final hasCompletedLanguageSetup = values[_languageSetupKey] == 'true';
+    final lastOpenedAt = DateTime.tryParse(values[_lastOpenedAtKey] ?? '');
+    await storage.write(_lastOpenedAtKey, DateTime.now().toIso8601String());
+
+    state = AppAuthState(
+      status: user == null ? AuthStatus.unauthenticated : AuthStatus.authenticated,
+      user: user,
+      hasCompletedLanguageSetup: hasCompletedLanguageSetup,
+      lastOpenedAt: lastOpenedAt,
+    );
   }
 
   Future<bool> requestOtp(String phone) async {
@@ -77,8 +95,15 @@ class AppAuthController extends StateNotifier<AppAuthState> {
       status: AuthStatus.authenticated,
       user: user,
       isLoading: false,
+      hasCompletedLanguageSetup: state.hasCompletedLanguageSetup,
+      lastOpenedAt: state.lastOpenedAt,
     );
     return true;
+  }
+
+  Future<void> completeLanguageSetup() async {
+    await SecureStorageService.instance.write(_languageSetupKey, 'true');
+    state = state.copyWith(hasCompletedLanguageSetup: true);
   }
 
   Future<void> markIdProofLinked() async {
@@ -90,8 +115,17 @@ class AppAuthController extends StateNotifier<AppAuthState> {
   }
 
   Future<void> logout() async {
-    await SecureStorageService.instance.deleteAll();
-    state = const AppAuthState(status: AuthStatus.unauthenticated);
+    final storage = SecureStorageService.instance;
+    await storage.delete(_idKey);
+    await storage.delete(_phoneKey);
+    await storage.delete(_nameKey);
+    await storage.delete(_roleKey);
+    await storage.delete(_tokenKey);
+    await storage.delete(_idProofKey);
+    state = const AppAuthState(
+      status: AuthStatus.unauthenticated,
+      hasCompletedLanguageSetup: true,
+    );
   }
 
   Future<void> _persist(AppSessionUser user) async {

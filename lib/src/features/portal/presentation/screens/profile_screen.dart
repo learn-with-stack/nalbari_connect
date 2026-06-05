@@ -1,6 +1,7 @@
 import 'package:nalbari_connect/src/features/auth/presentation/providers/app_auth_provider.dart';
 import 'package:nalbari_connect/src/features/portal/data/models/portal_models.dart';
 import 'package:nalbari_connect/src/features/portal/presentation/providers/portal_provider.dart';
+import 'package:nalbari_connect/src/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:nalbari_connect/src/imports/imports.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -11,40 +12,73 @@ class ProfileScreen extends ConsumerWidget {
     final auth = ref.watch(appAuthProvider);
     final portal = ref.watch(portalControllerProvider);
     final user = auth.user;
+
     return Scaffold(
       appBar: AppBar(title: Text('profile.title'.tr())),
       body: ListView(
         padding: EdgeInsets.all(20.w),
         children: [
-          Center(child: SvgPicture.asset(AppAssets.logo, width: 72.w, height: 72.w)),
+          Center(child: AppLogoMark(size: 72.w)),
           SizedBox(height: 12.h),
-          Text(user?.name ?? 'User', textAlign: TextAlign.center, style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
-          Text('+91 ${user?.phone ?? ''}', textAlign: TextAlign.center, style: context.textTheme.bodyMedium?.copyWith(color: context.colors.onSurfaceVariant)),
+          Text(
+            user?.name ?? 'User',
+            textAlign: TextAlign.center,
+            style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          Text(
+            '+91 ${user?.phone ?? ''}',
+            textAlign: TextAlign.center,
+            style: context.textTheme.bodyMedium?.copyWith(color: context.colors.onSurfaceVariant),
+          ),
+          SizedBox(height: 10.h),
+          Center(
+            child: Chip(
+              avatar: Icon(
+                user?.role.name == 'admin' ? Icons.admin_panel_settings_outlined : Icons.person_outline,
+                size: 18.sp,
+              ),
+              label: Text((user?.role.name ?? 'citizen').toUpperCase()),
+            ),
+          ),
           SizedBox(height: 22.h),
           _ProfileLink(icon: Icons.settings_outlined, label: 'profile.settings'.tr(), route: AppRoutes.settings),
           _ProfileLink(icon: Icons.info_outline, label: 'profile.about'.tr(), route: AppRoutes.about),
           _ProfileLink(icon: Icons.help_outline, label: 'profile.faq'.tr(), route: AppRoutes.faq),
           _ProfileLink(icon: Icons.privacy_tip_outlined, label: 'profile.privacy'.tr(), route: AppRoutes.privacy),
+          Card(
+            color: context.colors.surface,
+            child: ListTile(
+              leading: const Icon(Icons.logout_outlined),
+              title: Text('home.logout'.tr()),
+              onTap: () => ref.read(appAuthProvider.notifier).logout(),
+            ),
+          ),
           SizedBox(height: 18.h),
           Text('profile.appointments'.tr(), style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
           SizedBox(height: 8.h),
-          for (final appointment in portal.appointments.take(4))
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(appointment.reason),
-              subtitle: Text('${appointment.time} - ${appointment.status.name}'),
-              leading: const Icon(Icons.calendar_month_outlined),
-            ),
+          if (portal.appointments.isEmpty)
+            const AppEmptyState(title: 'No appointments yet')
+          else
+            for (final appointment in portal.appointments.take(4))
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(appointment.reason),
+                subtitle: Text('${appointment.time} - ${appointment.status.name}'),
+                leading: const Icon(Icons.calendar_month_outlined),
+              ),
           SizedBox(height: 12.h),
           Text('profile.complaints'.tr(), style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
           SizedBox(height: 8.h),
-          for (final complaint in portal.complaints.take(4))
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text('${complaint.areaType == AreaType.ward ? 'Ward' : 'Panchayat'} ${complaint.areaNumber}'),
-              subtitle: Text(complaint.description, maxLines: 2, overflow: TextOverflow.ellipsis),
-              leading: const Icon(Icons.report_problem_outlined),
-            ),
+          if (portal.complaints.isEmpty)
+            const AppEmptyState(title: 'No complaints yet')
+          else
+            for (final complaint in portal.complaints.take(4))
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text('${complaint.areaType == AreaType.ward ? 'Ward' : 'Panchayat'} ${complaint.areaNumber}'),
+                subtitle: Text(complaint.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+                leading: const Icon(Icons.report_problem_outlined),
+              ),
         ],
       ),
     );
@@ -72,37 +106,56 @@ class _ProfileLink extends StatelessWidget {
   }
 }
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(appSettingsProvider);
+
     return Scaffold(
       appBar: AppBar(title: Text('settings.title'.tr())),
       body: ListView(
         padding: EdgeInsets.all(20.w),
         children: [
+          Card(
+            color: context.colors.surface,
+            child: ListTile(
+              leading: AppLogoMark(size: 42.w),
+              title: Text('app.name'.tr(), style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+              subtitle: Text('app.tagline'.tr()),
+            ),
+          ),
+          SizedBox(height: 18.h),
           Text('settings.language'.tr(), style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
           SizedBox(height: 10.h),
           Wrap(
             spacing: 8.w,
+            runSpacing: 8.h,
             children: [
               ChoiceChip(label: const Text('English'), selected: context.locale.languageCode == 'en', onSelected: (_) => context.setLocale(const Locale('en'))),
-              ChoiceChip(label: const Text('অসমীয়া'), selected: context.locale.languageCode == 'as', onSelected: (_) => context.setLocale(const Locale('as'))),
-              ChoiceChip(label: const Text('हिन्दी'), selected: context.locale.languageCode == 'hi', onSelected: (_) => context.setLocale(const Locale('hi'))),
+              ChoiceChip(label: const Text('Assamese'), selected: context.locale.languageCode == 'as', onSelected: (_) => context.setLocale(const Locale('as'))),
+              ChoiceChip(label: const Text('Hindi'), selected: context.locale.languageCode == 'hi', onSelected: (_) => context.setLocale(const Locale('hi'))),
             ],
           ),
           SizedBox(height: 18.h),
-          SwitchListTile(
-            value: true,
-            onChanged: (_) {},
-            title: Text('settings.notifications'.tr()),
-            subtitle: const Text('Firebase notification placeholder for appointment and complaint updates'),
+          Text('Theme', style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+          SizedBox(height: 10.h),
+          SegmentedButton<ThemeMode>(
+            segments: const [
+              ButtonSegment(value: ThemeMode.system, label: Text('System'), icon: Icon(Icons.phone_android_outlined)),
+              ButtonSegment(value: ThemeMode.light, label: Text('Light'), icon: Icon(Icons.light_mode_outlined)),
+              ButtonSegment(value: ThemeMode.dark, label: Text('Dark'), icon: Icon(Icons.dark_mode_outlined)),
+            ],
+            selected: {settings.themeMode},
+            onSelectionChanged: (value) => ref.read(appSettingsProvider.notifier).setThemeMode(value.first),
           ),
+          SizedBox(height: 12.h),
           SwitchListTile(
-            value: true,
-            onChanged: (_) {},
-            title: Text('settings.dark_mode'.tr()),
+            value: settings.notificationsEnabled,
+            onChanged: (value) => ref.read(appSettingsProvider.notifier).setNotificationsEnabled(value),
+            title: Text('settings.notifications'.tr()),
+            subtitle: const Text('Appointment and complaint updates'),
           ),
           ListTile(
             leading: const Icon(Icons.verified_outlined),
@@ -128,6 +181,8 @@ class StaticInfoScreen extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.all(20.w),
         children: [
+          Center(child: AppLogoMark(size: 76.w)),
+          SizedBox(height: 16.h),
           Text(title, style: context.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
           SizedBox(height: 12.h),
           Text(body, style: context.textTheme.bodyLarge?.copyWith(height: 1.55)),

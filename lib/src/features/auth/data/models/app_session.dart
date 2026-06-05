@@ -75,12 +75,16 @@ class AppAuthState {
     this.user,
     this.pendingPhone,
     this.isLoading = false,
+    this.hasCompletedLanguageSetup = false,
+    this.lastOpenedAt,
   });
 
   final AuthStatus status;
   final AppSessionUser? user;
   final String? pendingPhone;
   final bool isLoading;
+  final bool hasCompletedLanguageSetup;
+  final DateTime? lastOpenedAt;
 
   bool get isAuthenticated => status == AuthStatus.authenticated && user != null;
   bool get isAdmin => user?.role == AppUserRole.admin;
@@ -90,6 +94,8 @@ class AppAuthState {
     AppSessionUser? user,
     String? pendingPhone,
     bool? isLoading,
+    bool? hasCompletedLanguageSetup,
+    DateTime? lastOpenedAt,
     bool clearUser = false,
     bool clearPendingPhone = false,
   }) {
@@ -98,6 +104,8 @@ class AppAuthState {
       user: clearUser ? null : user ?? this.user,
       pendingPhone: clearPendingPhone ? null : pendingPhone ?? this.pendingPhone,
       isLoading: isLoading ?? this.isLoading,
+      hasCompletedLanguageSetup: hasCompletedLanguageSetup ?? this.hasCompletedLanguageSetup,
+      lastOpenedAt: lastOpenedAt ?? this.lastOpenedAt,
     );
   }
 }

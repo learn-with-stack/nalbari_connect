@@ -13,6 +13,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future<void>.delayed(const Duration(seconds: 30));
       await ref.read(appAuthProvider.notifier).restoreSession();
       FlutterNativeSplash.remove();
     });
@@ -22,23 +23,38 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Widget build(BuildContext context) {
     final cs = context.theme.colorScheme;
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset(AppAssets.logo, width: 76.w, height: 76.w),
-            SizedBox(height: 18.h),
-            Text(
-              'app.name'.tr(),
-              style: context.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            SizedBox(height: 8.h),
-            SizedBox(
-              width: 26.w,
-              height: 26.w,
-              child: CircularProgressIndicator(strokeWidth: 2.4, color: cs.primary),
-            ),
-          ],
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          color: cs.surface,
+          image: DecorationImage(
+            image: AssetImage(AppAssets.logo),
+            opacity: 0.025,
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppLogoMark(size: 96.w),
+              SizedBox(height: 20.h),
+              Text(
+                'app.name'.tr(),
+                style: context.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
+              ),
+              SizedBox(height: 6.h),
+              Text(
+                'Connecting Nalbari with Leadership',
+                style: context.textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+              ),
+              SizedBox(height: 24.h),
+              SizedBox(
+                width: 28.w,
+                height: 28.w,
+                child: CircularProgressIndicator(strokeWidth: 2.4, color: cs.primary),
+              ),
+            ],
+          ),
         ),
       ),
     );

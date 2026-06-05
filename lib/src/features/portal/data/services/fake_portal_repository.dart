@@ -95,13 +95,13 @@ class FakePortalRepository {
   }
 
   Future<AppointmentRequest> createAppointment(AppointmentRequest appointment) async {
-    AppLogger.info('[FAKE API] POST /appointments -> ${appointment.fullName}');
+    AppLogger.info('[FAKE API] POST /appointments -> ${appointment.toJson()}');
     await _delay();
     return appointment;
   }
 
   Future<ComplaintRequest> createComplaint(ComplaintRequest complaint) async {
-    AppLogger.info('[FAKE API] POST /complaints -> ${complaint.areaType.name} ${complaint.areaNumber}');
+    AppLogger.info('[FAKE API] POST /complaints -> ${complaint.toJson()}');
     await _delay();
     return complaint;
   }

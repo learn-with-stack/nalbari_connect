@@ -1,5 +1,6 @@
 import 'package:nalbari_connect/src/imports/core_imports.dart';
 import 'package:nalbari_connect/src/imports/packages_imports.dart';
+import 'package:nalbari_connect/src/features/settings/presentation/providers/app_settings_provider.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});
@@ -11,12 +12,13 @@ class App extends ConsumerWidget {
   }
 
   Widget _buildMaterialApp(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(appSettingsProvider);
     return MaterialApp.router(
       title: 'Nalbari Connect',
       debugShowCheckedModeBanner: false,
       theme: buildLightTheme(primaryColorHex: '#4F46E5'),
       darkTheme: buildDarkTheme(primaryColorHex: '#4F46E5'),
-      themeMode: ThemeMode.system,
+      themeMode: settings.themeMode,
       routerConfig: ref.watch(appRouterProvider),
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,

@@ -38,7 +38,13 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         ),
         actions: [
           IconButton(onPressed: () => context.push(AppRoutes.profile), icon: const Icon(Icons.person_outline)),
-          IconButton(onPressed: () => ref.read(appAuthProvider.notifier).logout(), icon: const Icon(Icons.logout_outlined)),
+          IconButton(
+            onPressed: () async {
+              await ref.read(appAuthProvider.notifier).logout();
+              if (context.mounted) context.showSuccessSnackBar('Logged out successfully.');
+            },
+            icon: const Icon(Icons.logout_outlined),
+          ),
         ],
       ),
       body: RefreshIndicator(
@@ -205,12 +211,12 @@ class _AppointmentAdminCard extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   OutlinedButton(
-                    onPressed: () => ref.read(portalControllerProvider.notifier).updateAppointmentStatus(appointment.id, AppointmentStatus.rejected),
+                    onPressed: () => _updateAppointment(context, ref, AppointmentStatus.rejected),
                     child: Text('admin.reject'.tr()),
                   ),
                   SizedBox(width: 8.w),
                   FilledButton(
-                    onPressed: () => ref.read(portalControllerProvider.notifier).updateAppointmentStatus(appointment.id, AppointmentStatus.approved),
+                    onPressed: () => _updateAppointment(context, ref, AppointmentStatus.approved),
                     child: Text('admin.approve'.tr()),
                   ),
                 ],
@@ -220,6 +226,15 @@ class _AppointmentAdminCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _updateAppointment(BuildContext context, WidgetRef ref, AppointmentStatus status) async {
+    try {
+      await ref.read(portalControllerProvider.notifier).updateAppointmentStatus(appointment.id, status);
+      if (context.mounted) context.showSuccessSnackBar('Appointment marked ${status.name}.');
+    } catch (error) {
+      if (context.mounted) context.showErrorSnackBar(error.toString());
+    }
   }
 }
 
@@ -259,7 +274,7 @@ class _ComplaintAdminCard extends ConsumerWidget {
         title: Text('${complaint.areaType.name} ${complaint.areaNumber}'),
         subtitle: Text(complaint.description),
         trailing: PopupMenuButton<ComplaintStatus>(
-          onSelected: (status) => ref.read(portalControllerProvider.notifier).updateComplaintStatus(complaint.id, status),
+          onSelected: (status) => _updateComplaint(context, ref, status),
           itemBuilder: (context) => const [
             PopupMenuItem(value: ComplaintStatus.newRequest, child: Text('New')),
             PopupMenuItem(value: ComplaintStatus.inReview, child: Text('In review')),
@@ -268,6 +283,15 @@ class _ComplaintAdminCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _updateComplaint(BuildContext context, WidgetRef ref, ComplaintStatus status) async {
+    try {
+      await ref.read(portalControllerProvider.notifier).updateComplaintStatus(complaint.id, status);
+      if (context.mounted) context.showSuccessSnackBar('Complaint marked ${status.name}.');
+    } catch (error) {
+      if (context.mounted) context.showErrorSnackBar(error.toString());
+    }
   }
 }
 

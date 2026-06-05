@@ -38,7 +38,10 @@ class CitizenHomeScreen extends ConsumerWidget {
                   ),
                   IconButton(
                     tooltip: 'home.logout'.tr(),
-                    onPressed: () => ref.read(appAuthProvider.notifier).logout(),
+                    onPressed: () async {
+                      await ref.read(appAuthProvider.notifier).logout();
+                      if (context.mounted) context.showSuccessSnackBar('Logged out successfully.');
+                    },
                     icon: const Icon(Icons.logout_outlined),
                   ),
                 ],
@@ -59,7 +62,13 @@ class CitizenHomeScreen extends ConsumerWidget {
                   },
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, _) => Center(child: Text(error.toString())),
+                error: (error, _) => Padding(
+                  padding: EdgeInsets.all(24.w),
+                  child: AppErrorWidget(
+                    message: error.toString(),
+                    onRetry: () => ref.invalidate(newsProvider),
+                  ),
+                ),
               ),
             ),
           ],

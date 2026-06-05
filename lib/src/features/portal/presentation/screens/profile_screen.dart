@@ -1,5 +1,6 @@
 import 'package:nalbari_connect/src/features/auth/presentation/providers/app_auth_provider.dart';
 import 'package:nalbari_connect/src/features/portal/data/models/portal_models.dart';
+import 'package:nalbari_connect/src/features/portal/presentation/providers/fake_api_controls_provider.dart';
 import 'package:nalbari_connect/src/features/portal/presentation/providers/portal_provider.dart';
 import 'package:nalbari_connect/src/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:nalbari_connect/src/imports/imports.dart';
@@ -50,7 +51,10 @@ class ProfileScreen extends ConsumerWidget {
             child: ListTile(
               leading: const Icon(Icons.logout_outlined),
               title: Text('home.logout'.tr()),
-              onTap: () => ref.read(appAuthProvider.notifier).logout(),
+              onTap: () async {
+                await ref.read(appAuthProvider.notifier).logout();
+                if (context.mounted) context.showSuccessSnackBar('Logged out successfully.');
+              },
             ),
           ),
           SizedBox(height: 18.h),
@@ -112,6 +116,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(appSettingsProvider);
+    final fakeApi = ref.watch(fakeApiControlsProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text('settings.title'.tr())),
@@ -133,9 +138,30 @@ class SettingsScreen extends ConsumerWidget {
             spacing: 8.w,
             runSpacing: 8.h,
             children: [
-              ChoiceChip(label: const Text('English'), selected: context.locale.languageCode == 'en', onSelected: (_) => context.setLocale(const Locale('en'))),
-              ChoiceChip(label: const Text('Assamese'), selected: context.locale.languageCode == 'as', onSelected: (_) => context.setLocale(const Locale('as'))),
-              ChoiceChip(label: const Text('Hindi'), selected: context.locale.languageCode == 'hi', onSelected: (_) => context.setLocale(const Locale('hi'))),
+              ChoiceChip(
+                label: const Text('English'),
+                selected: context.locale.languageCode == 'en',
+                onSelected: (_) {
+                  context.setLocale(const Locale('en'));
+                  context.showSuccessSnackBar('Language changed to English.');
+                },
+              ),
+              ChoiceChip(
+                label: const Text('Assamese'),
+                selected: context.locale.languageCode == 'as',
+                onSelected: (_) {
+                  context.setLocale(const Locale('as'));
+                  context.showSuccessSnackBar('Language changed to Assamese.');
+                },
+              ),
+              ChoiceChip(
+                label: const Text('Hindi'),
+                selected: context.locale.languageCode == 'hi',
+                onSelected: (_) {
+                  context.setLocale(const Locale('hi'));
+                  context.showSuccessSnackBar('Language changed to Hindi.');
+                },
+              ),
             ],
           ),
           SizedBox(height: 18.h),
@@ -148,14 +174,60 @@ class SettingsScreen extends ConsumerWidget {
               ButtonSegment(value: ThemeMode.dark, label: Text('Dark'), icon: Icon(Icons.dark_mode_outlined)),
             ],
             selected: {settings.themeMode},
-            onSelectionChanged: (value) => ref.read(appSettingsProvider.notifier).setThemeMode(value.first),
+            onSelectionChanged: (value) {
+              ref.read(appSettingsProvider.notifier).setThemeMode(value.first);
+              context.showSuccessSnackBar('Theme updated.');
+            },
           ),
           SizedBox(height: 12.h),
           SwitchListTile(
             value: settings.notificationsEnabled,
-            onChanged: (value) => ref.read(appSettingsProvider.notifier).setNotificationsEnabled(value),
+            onChanged: (value) {
+              ref.read(appSettingsProvider.notifier).setNotificationsEnabled(value);
+              context.showSuccessSnackBar(value ? 'Notifications enabled.' : 'Notifications disabled.');
+            },
             title: Text('settings.notifications'.tr()),
             subtitle: const Text('Appointment and complaint updates'),
+          ),
+          SizedBox(height: 18.h),
+          Text('Fake API mode', style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+          SizedBox(height: 8.h),
+          Text(
+            'Use this while backend is not ready. The app uses the same async repository shape that the real API will use later.',
+            style: context.textTheme.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),
+          ),
+          SizedBox(height: 10.h),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SegmentedButton<FakeApiFailureMode>(
+              segments: const [
+                ButtonSegment(value: FakeApiFailureMode.none, label: Text('Working'), icon: Icon(Icons.cloud_done_outlined)),
+                ButtonSegment(value: FakeApiFailureMode.offline, label: Text('Offline'), icon: Icon(Icons.wifi_off_outlined)),
+                ButtonSegment(value: FakeApiFailureMode.serverError, label: Text('Server'), icon: Icon(Icons.error_outline)),
+              ],
+              selected: {fakeApi.failureMode},
+              onSelectionChanged: (value) {
+                final mode = value.first;
+                ref.read(fakeApiControlsProvider.notifier).setFailureMode(mode);
+                ref.invalidate(newsProvider);
+                ref.read(portalControllerProvider.notifier).load();
+                final message = switch (mode) {
+                  FakeApiFailureMode.none => 'Fake API restored. GET/POST/PATCH will work.',
+                  FakeApiFailureMode.offline => 'Fake API is offline. Requests will show network error.',
+                  FakeApiFailureMode.serverError => 'Fake API will return server error.',
+                };
+                context.showSuccessSnackBar(message);
+              },
+            ),
+          ),
+          SizedBox(height: 14.h),
+          Card(
+            color: context.colors.surface,
+            child: ListTile(
+              leading: const Icon(Icons.http_outlined),
+              title: const Text('API base URL'),
+              subtitle: Text(dotenv.get('API_BASE_URL', fallback: 'Fake API enabled')),
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.verified_outlined),

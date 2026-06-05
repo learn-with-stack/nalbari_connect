@@ -1,10 +1,16 @@
 import 'package:nalbari_connect/src/features/portal/data/models/portal_models.dart';
+import 'package:nalbari_connect/src/features/portal/presentation/providers/fake_api_controls_provider.dart';
 import 'package:nalbari_connect/src/utils/logger.dart';
 
 class FakePortalRepository {
+  FakePortalRepository(this._controls);
+
+  final FakeApiControls _controls;
+
   Future<List<NewsItem>> fetchNews() async {
     AppLogger.info('[FAKE API] GET /news');
     await _delay();
+    _throwIfNeeded('/news');
     return [
       NewsItem(
         id: 'n1',
@@ -33,6 +39,7 @@ class FakePortalRepository {
   Future<List<AppointmentRequest>> fetchAppointments() async {
     AppLogger.info('[FAKE API] GET /appointments');
     await _delay();
+    _throwIfNeeded('/appointments');
     return [
       AppointmentRequest(
         id: 'a1',
@@ -80,6 +87,7 @@ class FakePortalRepository {
   Future<List<ComplaintRequest>> fetchComplaints() async {
     AppLogger.info('[FAKE API] GET /complaints');
     await _delay();
+    _throwIfNeeded('/complaints');
     return [
       ComplaintRequest(
         id: 'c1',
@@ -97,12 +105,14 @@ class FakePortalRepository {
   Future<AppointmentRequest> createAppointment(AppointmentRequest appointment) async {
     AppLogger.info('[FAKE API] POST /appointments -> ${appointment.toJson()}');
     await _delay();
+    _throwIfNeeded('/appointments');
     return appointment;
   }
 
   Future<ComplaintRequest> createComplaint(ComplaintRequest complaint) async {
     AppLogger.info('[FAKE API] POST /complaints -> ${complaint.toJson()}');
     await _delay();
+    _throwIfNeeded('/complaints');
     return complaint;
   }
 
@@ -112,6 +122,7 @@ class FakePortalRepository {
   ) async {
     AppLogger.info('[FAKE API] PATCH /appointments/${appointment.id}/status -> ${status.name}');
     await _delay();
+    _throwIfNeeded('/appointments/${appointment.id}/status');
     return appointment.copyWith(status: status);
   }
 
@@ -121,8 +132,26 @@ class FakePortalRepository {
   ) async {
     AppLogger.info('[FAKE API] PATCH /complaints/${complaint.id}/status -> ${status.name}');
     await _delay();
+    _throwIfNeeded('/complaints/${complaint.id}/status');
     return complaint.copyWith(status: status);
   }
 
-  Future<void> _delay() => Future<void>.delayed(const Duration(milliseconds: 450));
+  Future<void> _delay() => Future<void>.delayed(Duration(milliseconds: _controls.latencyMs));
+
+  void _throwIfNeeded(String endpoint) {
+    switch (_controls.failureMode) {
+      case FakeApiFailureMode.none:
+        return;
+      case FakeApiFailureMode.offline:
+        throw const FakeApiException(
+          'You are offline. Please check your internet connection.',
+          reason: 'No network connection available for this request.',
+        );
+      case FakeApiFailureMode.serverError:
+        throw FakeApiException(
+          'Server error while calling $endpoint.',
+          reason: 'Backend returned a simulated 500 response.',
+        );
+    }
+  }
 }

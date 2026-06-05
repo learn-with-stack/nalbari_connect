@@ -76,24 +76,28 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
           SizedBox(height: 26.h),
           FilledButton(
             onPressed: () async {
-              await ref.read(portalControllerProvider.notifier).submitComplaint(
-                ComplaintRequest(
-                  id: DateTime.now().microsecondsSinceEpoch.toString(),
-                  reporterName: auth.user?.name ?? 'Verified Resident',
-                  areaType: _areaType,
-                  areaNumber: _areaController.text.trim().isEmpty ? 'Not provided' : _areaController.text.trim(),
-                  description: _detailsController.text.trim().isEmpty ? 'Local issue reported by citizen.' : _detailsController.text.trim(),
-                  status: ComplaintStatus.newRequest,
-                  priority: ComplaintPriority.medium,
-                  createdAt: DateTime.now(),
-                  mediaName: _mediaName,
-                  latitude: _latitude,
-                  longitude: _longitude,
-                ),
-              );
-              if (!context.mounted) return;
-              context.showSuccessSnackBar('complaint.success'.tr());
-              context.pop();
+              try {
+                await ref.read(portalControllerProvider.notifier).submitComplaint(
+                  ComplaintRequest(
+                    id: DateTime.now().microsecondsSinceEpoch.toString(),
+                    reporterName: auth.user?.name ?? 'Verified Resident',
+                    areaType: _areaType,
+                    areaNumber: _areaController.text.trim().isEmpty ? 'Not provided' : _areaController.text.trim(),
+                    description: _detailsController.text.trim().isEmpty ? 'Local issue reported by citizen.' : _detailsController.text.trim(),
+                    status: ComplaintStatus.newRequest,
+                    priority: ComplaintPriority.medium,
+                    createdAt: DateTime.now(),
+                    mediaName: _mediaName,
+                    latitude: _latitude,
+                    longitude: _longitude,
+                  ),
+                );
+                if (!context.mounted) return;
+                context.showSuccessSnackBar('complaint.success'.tr());
+                context.pop();
+              } catch (error) {
+                if (context.mounted) context.showErrorSnackBar(error.toString());
+              }
             },
             child: Text('complaint.submit'.tr()),
           ),

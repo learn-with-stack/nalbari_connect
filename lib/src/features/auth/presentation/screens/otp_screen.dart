@@ -22,13 +22,17 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final auth = ref.watch(appAuthProvider);
     final cs = context.colors;
     final phone = auth.pendingPhone ?? '9876543210';
-    final masked = phone.length >= 3 ? '+91 ••••• ••${phone.substring(phone.length - 3)}' : '+91 ••••• ••892';
+    final masked = phone.length >= 3 ? '+91 ***** **${phone.substring(phone.length - 3)}' : '+91 ***** **892';
 
     return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned.fill(child: CustomPaint(painter: _PatternPainter(color: cs.outlineVariant.withValues(alpha: 0.35)))),
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _PatternPainter(color: cs.outlineVariant.withValues(alpha: 0.35)),
+              ),
+            ),
             ListView(
               padding: EdgeInsets.fromLTRB(16.w, 22.h, 16.w, 24.h),
               children: [
@@ -38,12 +42,20 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   label: const Text('Change Number'),
                   style: TextButton.styleFrom(alignment: Alignment.centerLeft),
                 ),
-                SizedBox(height: 46.h),
+                SizedBox(height: 30.h),
                 Card(
                   color: cs.surface,
                   child: Column(
                     children: [
-                      SizedBox(height: 5.h, child: DecoratedBox(decoration: BoxDecoration(color: const Color(0xFFFF9933), borderRadius: AppBorders.full))),
+                      SizedBox(
+                        height: 5.h,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF9933),
+                            borderRadius: AppBorders.full,
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.all(24.w),
                         child: Column(
@@ -62,7 +74,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 30.h),
+                            SizedBox(height: 26.h),
                             Text(
                               'Verify Identity',
                               textAlign: TextAlign.center,
@@ -96,22 +108,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                               textAlign: TextAlign.center,
                               style: context.textTheme.titleSmall,
                             ),
-                            TextButton(onPressed: null, child: const Text('Resend OTP')),
+                            TextButton(
+                              onPressed: () => context.showSuccessSnackBar('Demo OTP is 123456.'),
+                              child: const Text('Resend OTP'),
+                            ),
                             SizedBox(height: 14.h),
                             FilledButton.icon(
-                              onPressed: auth.isLoading
-                                  ? null
-                                  : () async {
-                                      final ok = await ref.read(appAuthProvider.notifier).verifyOtp(_otpController.text.trim());
-                                      if (!ok && context.mounted) {
-                                        context.showErrorSnackBar('Invalid OTP');
-                                        return;
-                                      }
-                                      if (context.mounted) {
-                                        final auth = ref.read(appAuthProvider);
-                                        context.go(auth.isAdmin ? AppRoutes.adminDashboard : AppRoutes.citizenHome);
-                                      }
-                                    },
+                              onPressed: auth.isLoading ? null : _verifyOtp,
                               icon: auth.isLoading
                                   ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
                                   : const Icon(Icons.lock_outline),
@@ -146,9 +149,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                     subtitle: const Text('Your session is protected by state-grade encryption protocols.'),
                   ),
                 ),
-                SizedBox(height: 80.h),
+                SizedBox(height: 60.h),
                 Text(
-                  'Privacy Policy   |   Support\n© 2024 Nalbari Connect • Secure Gateway',
+                  'Privacy Policy   |   Support\nCopyright 2024 Nalbari Connect | Secure Gateway',
                   textAlign: TextAlign.center,
                   style: context.textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
                 ),
@@ -158,6 +161,22 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _verifyOtp() async {
+    try {
+      final ok = await ref.read(appAuthProvider.notifier).verifyOtp(_otpController.text.trim());
+      if (!ok && mounted) {
+        context.showErrorSnackBar('Invalid OTP. Use 123456 for this demo.');
+        return;
+      }
+      if (!mounted) return;
+      final auth = ref.read(appAuthProvider);
+      context.showSuccessSnackBar(auth.isAdmin ? 'Admin login successful.' : 'Citizen login successful.');
+      context.go(auth.isAdmin ? AppRoutes.adminDashboard : AppRoutes.citizenHome);
+    } catch (error) {
+      if (mounted) context.showErrorSnackBar('Login failed: $error');
+    }
   }
 }
 

@@ -45,7 +45,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         if (!auth.hasCompletedLanguageSetup && location != AppRoutes.onboarding) {
           return AppRoutes.onboarding;
         }
-        return publicRoutes.contains(location) ? null : AppRoutes.onboarding;
+        return publicRoutes.contains(location) ? null : AppRoutes.login;
       }
 
       if (publicRoutes.contains(location)) {

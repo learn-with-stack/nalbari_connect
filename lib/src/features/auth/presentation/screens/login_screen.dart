@@ -27,7 +27,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned.fill(child: CustomPaint(painter: _PatternPainter(color: cs.outlineVariant.withValues(alpha: 0.32)))),
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _PatternPainter(color: cs.outlineVariant.withValues(alpha: 0.32)),
+              ),
+            ),
             ListView(
               padding: EdgeInsets.fromLTRB(16.w, 22.h, 16.w, 22.h),
               children: [
@@ -42,7 +46,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   color: cs.surface,
                   child: Column(
                     children: [
-                      SizedBox(height: 5.h, child: DecoratedBox(decoration: BoxDecoration(color: const Color(0xFFFF9933), borderRadius: AppBorders.full))),
+                      SizedBox(
+                        height: 5.h,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF9933),
+                            borderRadius: AppBorders.full,
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.all(24.w),
                         child: Form(
@@ -66,8 +78,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 textAlign: TextAlign.center,
                                 style: context.textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
                               ),
-                              SizedBox(height: 30.h),
-                              Text('Mobile Number', style: context.textTheme.labelMedium?.copyWith(color: cs.onSurfaceVariant, fontWeight: FontWeight.w700)),
+                              SizedBox(height: 26.h),
+                              _DemoLoginCard(onPick: (phone) => _phoneController.text = phone),
+                              SizedBox(height: 22.h),
+                              Text(
+                                'Mobile Number',
+                                style: context.textTheme.labelMedium?.copyWith(
+                                  color: cs.onSurfaceVariant,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                               SizedBox(height: 8.h),
                               TextFormField(
                                 controller: _phoneController,
@@ -111,14 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               SizedBox(height: 20.h),
                               FilledButton.icon(
-                                onPressed: auth.isLoading
-                                    ? null
-                                    : () async {
-                                        if (!(_formKey.currentState?.validate() ?? false)) return;
-                                        final phone = _phoneController.text.replaceAll(RegExp(r'\D'), '');
-                                        await ref.read(appAuthProvider.notifier).requestOtp(phone);
-                                        if (context.mounted) context.go(AppRoutes.verifyOtp);
-                                      },
+                                onPressed: auth.isLoading ? null : _requestOtp,
                                 icon: auth.isLoading
                                     ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
                                     : const Icon(Icons.send_outlined),
@@ -129,8 +142,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   foregroundColor: Colors.white,
                                 ),
                               ),
-                              SizedBox(height: 20.h),
-                              Text('Demo OTP: 123456 • Admin: 9999999999', textAlign: TextAlign.center, style: context.textTheme.labelSmall?.copyWith(color: cs.primary)),
+                              SizedBox(height: 14.h),
+                              Text(
+                                'Demo OTP: 123456',
+                                textAlign: TextAlign.center,
+                                style: context.textTheme.labelSmall?.copyWith(color: cs.primary, fontWeight: FontWeight.w800),
+                              ),
                             ],
                           ),
                         ),
@@ -148,12 +165,79 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 SizedBox(height: 30.h),
                 Text(
-                  'Privacy Policy   |   Support\n© 2024 Nalbari Connect • Secure Gateway',
+                  'Privacy Policy   |   Support\nCopyright 2024 Nalbari Connect | Secure Gateway',
                   textAlign: TextAlign.center,
                   style: context.textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
                 ),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _requestOtp() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    final phone = _phoneController.text.replaceAll(RegExp(r'\D'), '');
+    try {
+      await ref.read(appAuthProvider.notifier).requestOtp(phone);
+      if (!mounted) return;
+      context.showSuccessSnackBar('OTP sent. Use 123456 for this demo.');
+      context.go(AppRoutes.verifyOtp);
+    } catch (error) {
+      if (mounted) context.showErrorSnackBar('Could not send OTP: $error');
+    }
+  }
+}
+
+class _DemoLoginCard extends StatelessWidget {
+  const _DemoLoginCard({required this.onPick});
+
+  final ValueChanged<String> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.colors.primaryContainer.withValues(alpha: 0.18),
+        borderRadius: AppBorders.card,
+        border: Border.all(color: context.colors.primary.withValues(alpha: 0.22)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(12.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Demo accounts', style: context.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900)),
+            SizedBox(height: 8.h),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      onPick('9876543210');
+                      context.showSuccessSnackBar('Citizen demo number selected.');
+                    },
+                    icon: const Icon(Icons.person_outline),
+                    label: const Text('User'),
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      onPick('9999999999');
+                      context.showSuccessSnackBar('Admin demo number selected.');
+                    },
+                    icon: const Icon(Icons.admin_panel_settings_outlined),
+                    label: const Text('Admin'),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 4.h),
+            Text('User: 9876543210 | Admin: 9999999999', style: context.textTheme.labelSmall),
           ],
         ),
       ),

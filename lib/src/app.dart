@@ -16,8 +16,8 @@ class App extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Nalbari Connect',
       debugShowCheckedModeBanner: false,
-      theme: buildLightTheme(primaryColorHex: '#4F46E5'),
-      darkTheme: buildDarkTheme(primaryColorHex: '#4F46E5'),
+      theme: buildLightTheme(primaryColorHex: '#FF9933'),
+      darkTheme: buildDarkTheme(primaryColorHex: '#FF9933'),
       themeMode: settings.themeMode,
       routerConfig: ref.watch(appRouterProvider),
       localizationsDelegates: context.localizationDelegates,

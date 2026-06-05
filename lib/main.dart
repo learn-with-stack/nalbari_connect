@@ -4,8 +4,7 @@ import 'src/app.dart';
 
 
 Future<void> main() async {
-  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  WidgetsFlutterBinding.ensureInitialized();
   
   await EasyLocalization.ensureInitialized();
   await dotenv.load(fileName: '.env');

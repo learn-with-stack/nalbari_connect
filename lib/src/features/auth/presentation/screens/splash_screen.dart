@@ -13,9 +13,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future<void>.delayed(const Duration(seconds: 30));
+      await Future<void>.delayed(const Duration(seconds: 3));
       await ref.read(appAuthProvider.notifier).restoreSession();
-      FlutterNativeSplash.remove();
     });
   }
 
@@ -26,7 +25,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       body: DecoratedBox(
         decoration: BoxDecoration(
           color: cs.surface,
-          image: DecorationImage(
+          image: const DecorationImage(
             image: AssetImage(AppAssets.logo),
             opacity: 0.025,
             fit: BoxFit.cover,

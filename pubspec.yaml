@@ -77,7 +77,6 @@ dependencies:
   # Localization
   easy_localization: ^3.0.8
 
-  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +86,7 @@ dev_dependencies:
   # Code Generation
   build_runner: ^2.12.2
   hive_ce_generator: ^1.11.1
+  flutter_launcher_icons: ^0.14.4
 
 dependency_overrides:
   # Riverpod 3.x requires a newer test_api than what Flutter SDK pins.
@@ -102,3 +102,11 @@ flutter:
     - assets/icons/
     - assets/translations/
     - .env
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"
+  adaptive_icon_background: "#EEF2FF"
+  adaptive_icon_foreground: "assets/images/logo.png"
+  remove_alpha_ios: true
